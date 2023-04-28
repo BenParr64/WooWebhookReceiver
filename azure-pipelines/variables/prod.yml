@@ -1,0 +1,7 @@
+variables:
+  azureSubscription: analytics-rg-sp
+  webappName: woo-webhook-receiver
+  location: northeurope
+  resourceGroupName: analytics-rg
+  environment: "Development"
+  appServicePlanName: analytics-plan

@@ -1,0 +1,35 @@
+jobs:
+  - job: Build
+    displayName: 'Build'
+    pool:
+      vmImage: ubuntu-latest
+     
+    steps:
+      - task: UseDotNet@2
+        inputs:
+          version: '6.x'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Build'
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Unit tests'
+        inputs:
+          command: 'test'
+          projects: '**/*.UnitTests.csproj'
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Publish'
+        inputs:
+          command: 'publish'
+          publishWebProjects: false
+          projects: '**/WoocommerceWebhookReceiver.csproj'
+          arguments: '--output $(Build.ArtifactStagingDirectory)'
+          zipAfterPublish: true
+
+      - publish: $(Build.ArtifactStagingDirectory)
+        displayName: 'Publish function artifact'
+        artifact: WooWebhookReceiver-Publish
