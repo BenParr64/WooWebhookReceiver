@@ -90,6 +90,13 @@
             <td colspan="4" style="text-align: right">VAT (20%):</td>
             <td>£@(decimal.Parse(Model.Total) * 0.2m)</td>
         </tr>
+        @foreach (var shippingLine in Model.ShippingLines)
+        {
+            <tr>
+                <td>@shippingLine.MethodTitle</td>
+                <td>£@shippingLine.MethodTotal</td>
+            </tr>
+        }
         <tr>
             <td colspan="4" style="text-align: right">Total:</td>
             <td>£@(decimal.Parse(Model.Total))</td>
@@ -98,6 +105,7 @@
     </table>
     <div class="footer">
         <p>Thank you for your business!</p>
+        <p>VAT Number: GB358338960</p>
     </div>
 </div>
 </body>

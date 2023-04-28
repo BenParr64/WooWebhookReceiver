@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Repositories.Models;
 
 namespace PdfOrders.Repositories.Models;
 
@@ -19,9 +20,10 @@ public class Order
     [JsonPropertyName("billing")] public BillingAddress BillingAddress { get; set; }
 
     [JsonPropertyName("line_items")] public IEnumerable<LineItem> LineItems { get; set; }
-
+    [JsonPropertyName("shipping_lines")] public IEnumerable<ShippingLine> ShippingLines { get; set; }
     [JsonPropertyName("payment_method")] public string PaymentMethod { get; set; }
 
     [JsonPropertyName("payment_method_title")]
     public string PaymentMethodTitle { get; set; }
 }
+
