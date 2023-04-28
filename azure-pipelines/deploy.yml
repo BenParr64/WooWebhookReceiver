@@ -48,8 +48,8 @@ jobs:
                   --name ${{parameters.webAppName}} \
                   --settings \
                     ConfigurationSettings:ConsumerKey="$(ConsumerKey)" \
-                    ConfigurationSettings:ConsumerSecret="$(ConsumerSecret)"
-
+                    ConfigurationSettings:ConsumerSecret="$(ConsumerSecret)" \
+                    ConfigurationSettings:BaseUrl="${{parameters.baseUrl}}" 
 
             - task: AzureWebApp@1
               displayName: Deploy

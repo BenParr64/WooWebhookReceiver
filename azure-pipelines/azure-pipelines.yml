@@ -29,4 +29,5 @@ stages:
           resourceGroupName: "${{variables.resourceGroupName}}"
           location: "${{variables.location}}"
           appServicePlanName: "${{variables.appServicePlanName}}"
+          baseUrl: "${{variables.baseUrl}}"
 

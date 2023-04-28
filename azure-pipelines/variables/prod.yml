@@ -5,3 +5,4 @@ variables:
   resourceGroupName: analytics-rg
   environment: "Development"
   appServicePlanName: analytics-plan
+  baseUrl: https://kegthat.com/
