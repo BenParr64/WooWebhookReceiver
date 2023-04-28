@@ -1,0 +1,63 @@
+jobs:
+  - deployment: Deploy
+    environment: ${{parameters.environment}}
+    pool:
+      vmImage: ubuntu-latest
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - download: current
+            - checkout: self
+
+            - task: AzureCLI@2
+              displayName: 'Create App Service Plan'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az appservice plan create \
+                  --name ${{parameters.appServicePlanName}} \
+                  --resource-group ${{parameters.resourceGroupName}} \
+                  --sku B1
+
+            - task: AzureCLI@2
+              displayName: 'Create Web App'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az webapp create \
+                  --name ${{parameters.webAppName}} \
+                  --resource-group ${{parameters.resourceGroupName}} \
+                  --plan ${{parameters.appServicePlanName}} \
+                  --runtime 'DOTNET|6.0'
+
+            - task: AzureCLI@2
+              displayName: 'Set Configuration Settings'
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                scriptType: bash
+                scriptLocation: inlineScript
+                inlineScript: |
+                  az webapp config appsettings set \
+                  --resource-group ${{parameters.resourceGroupName}} \
+                  --name ${{parameters.webAppName}} \
+                  --settings \
+                    ConfigurationSettings:ConsumerKey="$(ConsumerKey)" \
+                    ConfigurationSettings:ConsumerSecret="$(ConsumerSecret)"
+
+
+            - task: AzureWebApp@1
+              displayName: Deploy
+              inputs:
+                azureSubscription: ${{parameters.azureSubscription}}
+                appType: "webApp"
+                appName: $(webappName)
+                package: $(Pipeline.Workspace)/**/*.zip
+
+
+    

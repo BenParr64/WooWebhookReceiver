@@ -1,0 +1,32 @@
+trigger:
+  - "*"
+
+name: $(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
+
+variables:
+  - template: variables/prod.yml
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    jobs:
+      - template: build.yml
+       
+  - stage: Deploy
+    displayName: Deploy
+    dependsOn: Build
+    condition: succeeded()
+    variables:
+      - group: WooWebhookReceiver-Common
+    jobs:
+      - template: deploy.yml
+        parameters:
+          azureSubscription: ${{variables.azureSubscription}}
+          environment: "${{variables.environment}}"
+          webappName: "${{variables.webappName}}"
+          resourceGroupName: "${{variables.resourceGroupName}}"
+          location: "${{variables.location}}"
+          appServicePlanName: "${{variables.appServicePlanName}}"
+

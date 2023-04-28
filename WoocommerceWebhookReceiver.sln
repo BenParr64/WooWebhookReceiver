@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WoocommerceWebhookReceiver", "WoocommerceWebhookReceiver\WoocommerceWebhookReceiver.csproj", "{013F1B12-EBBA-43AE-99DB-FFF55AF361FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{62A2CD42-1F53-451F-BE6F-CD88E7FAAAE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories", "Repositories\Repositories.csproj", "{7880F443-1C02-43D8-ABCB-1D866CCDF774}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{013F1B12-EBBA-43AE-99DB-FFF55AF361FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{013F1B12-EBBA-43AE-99DB-FFF55AF361FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{013F1B12-EBBA-43AE-99DB-FFF55AF361FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{013F1B12-EBBA-43AE-99DB-FFF55AF361FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A2CD42-1F53-451F-BE6F-CD88E7FAAAE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A2CD42-1F53-451F-BE6F-CD88E7FAAAE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A2CD42-1F53-451F-BE6F-CD88E7FAAAE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A2CD42-1F53-451F-BE6F-CD88E7FAAAE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7880F443-1C02-43D8-ABCB-1D866CCDF774}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7880F443-1C02-43D8-ABCB-1D866CCDF774}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7880F443-1C02-43D8-ABCB-1D866CCDF774}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7880F443-1C02-43D8-ABCB-1D866CCDF774}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4A08AB18-F7D5-4BDA-9F68-B5744322CAA3}
+	EndGlobalSection
+EndGlobal
