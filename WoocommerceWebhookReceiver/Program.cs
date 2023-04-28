@@ -12,6 +12,18 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+const string localSettingFileName = "local.settings.json";
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile(localSettingFileName, true, true)
+    .AddEnvironmentVariables()
+    .Build();
+
+const string configurationSettings = "ConfigurationSettings";
+
+builder.Services.Configure<ConfigurationSettings>(configuration.GetSection(configurationSettings));
+
 builder.Services.AddSignalR();
 builder.Services.AddHttpClient<IWoocommerceClient, WoocommerceClient>();
 builder.Services.AddScoped<IPdfDocumentGenerator, PdfDocumentGenerator>();
@@ -27,16 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-const string localSettingFileName = "local.settings.json";
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile(localSettingFileName, true, true)
-    .AddEnvironmentVariables()
-    .Build();
 
-const string configurationSettings = "ConfigurationSettings";
-
-builder.Services.Configure<ConfigurationSettings>(configuration.GetSection(configurationSettings));
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
