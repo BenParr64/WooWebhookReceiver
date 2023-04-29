@@ -19,7 +19,7 @@ public class PdfDocumentGenerator : IPdfDocumentGenerator
         {
             TemplatesEnum.Invoice => await _viewRenderer.RenderViewToStringAsync("Invoice", content),
             TemplatesEnum.PackingSlip => await _viewRenderer.RenderViewToStringAsync("Orders/PackingSlip", content),
-            TemplatesEnum.Malt => await _viewRenderer.RenderViewToStringAsync("Orders/Malt", content),
+            TemplatesEnum.Malt => await _viewRenderer.RenderViewToStringAsync("Ingredient_Grain", content),
             TemplatesEnum.Hop => await _viewRenderer.RenderViewToStringAsync("Orders/Hop", content),
             _ => throw new ArgumentOutOfRangeException(nameof(template), template, null)
         };

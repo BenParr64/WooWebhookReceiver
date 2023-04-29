@@ -4,7 +4,6 @@ using PdfOrders.Repositories;
 using Services;
 using Services.Enums;
 using Services.Interfaces;
-using System.Text;
 
 namespace WoocommerceWebhookReceiver.Controllers
 {
@@ -28,19 +27,32 @@ namespace WoocommerceWebhookReceiver.Controllers
         {
             var order = await _woocommerceClient.GetOrder();
 
-            var html = await _pdfDocumentGenerator.GenerateTemplate(TemplatesEnum.Invoice, order);
-            
-            await _hub.Clients.All.SendAsync("ReceiveMessage", html);
-            
-            return Ok(html);
+            foreach (TemplatesEnum template in Enum.GetValues(typeof(TemplatesEnum)))
+            {
+                var html = await _pdfDocumentGenerator.GenerateTemplate(template, order);
+                await _hub.Clients.All.SendAsync("ReceiveMessage", html);
+
+            }
+
+            return Ok();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> PreviewTemplate()
+        [HttpGet("Invoice")]
+        public async Task<IActionResult> PreviewInvoiceTemplate()
         {
             var order = await _woocommerceClient.GetOrder();
 
             var html = await _pdfDocumentGenerator.GenerateTemplate(TemplatesEnum.Invoice, order);
+
+            return Ok(html);
+        }
+
+        [HttpGet("Malt")]
+        public async Task<IActionResult> PreviewMaltTemplate()
+        {
+            var order = await _woocommerceClient.GetOrder();
+
+            var html = await _pdfDocumentGenerator.GenerateTemplate(TemplatesEnum.Malt, order);
 
             return Ok(html);
         }

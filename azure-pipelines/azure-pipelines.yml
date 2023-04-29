@@ -13,7 +13,15 @@ stages:
   - stage: Build
     jobs:
       - template: build.yml
-       
+
+  - stage: CreateServiceBus
+    jobs:
+      - template: infrastructure.yml
+        parameters:
+           azureSubscription: ${{variables.azureSubscription}}
+           resourceGroupName: "${{variables.resourceGroupName}}"
+           serviceBusName: "${{variables.serviceBusName}}"
+
   - stage: Deploy
     displayName: Deploy
     dependsOn: Build

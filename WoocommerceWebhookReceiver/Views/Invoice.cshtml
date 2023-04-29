@@ -64,8 +64,7 @@
     <table>
         <thead>
         <tr>
-            <th>Item</th>
-            <th>Description</th>
+            <th>Product</th>
             <th>Quantity</th>
             <th>Unit Price</th>
             <th>Amount</th>
@@ -75,30 +74,30 @@
         @foreach (var item in Model.LineItems)
         {
             <tr>
-                <td>@item.ProductId</td>
                 <td>@item.Name</td>
                 <td>@item.Quantity</td>
                 <td>£@item.Total</td>
                 <td>£@(item.Quantity * decimal.Parse(item.Total))</td>
             </tr>
         }
-        <tr>
-            <td colspan="4" style="text-align: right">Subtotal:</td>
-            <td>£@Model.Total</td>
-        </tr>
-        <tr>
-            <td colspan="4" style="text-align: right">VAT (20%):</td>
-            <td>£@(decimal.Parse(Model.Total) * 0.2m)</td>
-        </tr>
         @foreach (var shippingLine in Model.ShippingLines)
         {
             <tr>
-                <td>@shippingLine.MethodTitle</td>
-                <td>£@shippingLine.MethodTotal</td>
+                <td colspan="3">@shippingLine.MethodTitle</td>
+                <td>£@shippingLine.Total</td>
             </tr>
         }
         <tr>
-            <td colspan="4" style="text-align: right">Total:</td>
+            <td colspan="3" style="text-align: right">Subtotal:</td>
+            <td>£@Model.Total</td>
+        </tr>
+        <tr>
+            <td colspan="3" style="text-align: right">VAT (20%):</td>
+            <td>£@((decimal.Parse(Model.Total) * 0.2m).ToString("F2"))</td>
+        </tr>
+
+        <tr>
+            <td colspan="3" style="text-align: right">Total:</td>
             <td>£@(decimal.Parse(Model.Total))</td>
         </tr>
         </tbody>

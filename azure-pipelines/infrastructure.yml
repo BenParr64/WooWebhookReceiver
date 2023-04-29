@@ -1,0 +1,31 @@
+jobs:
+  - job: CreateServiceBus
+    displayName: 'Create Service Bus'
+    pool:
+      vmImage: ubuntu-latest
+     
+    steps:
+      - task: AzureCLI@2
+        displayName: 'Create Service Bus Namespace'
+        inputs:
+          azureSubscription: ${{parameters.azureSubscription}}
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az servicebus namespace create \
+            --name ${parameters.serviceBusName} \
+            --resource-group ${parameters.resourceGroupName} \
+            --sku Standard
+
+      - task: AzureCLI@2
+        displayName: 'Create Service Bus Queue'
+        inputs:
+          azureSubscription: ${{parameters.azureSubscription}}
+          scriptType: bash
+          scriptLocation: inlineScript
+          inlineScript: |
+            az servicebus queue create \
+            --name ${parameters.queueName} \
+            --namespace-name ${parameters.serviceBusName} \
+            --resource-group ${parameters.resourceGroupName}
+  

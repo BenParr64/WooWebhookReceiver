@@ -6,5 +6,5 @@ public class ShippingLine
 {
     [JsonPropertyName("id")] public int Id { get; set; }
     [JsonPropertyName("method_title")] public string MethodTitle { get; set; }
-    [JsonPropertyName("method_total")] public string MethodTotal { get; set; }
+    [JsonPropertyName("total")] public string Total { get; set; }
 }
