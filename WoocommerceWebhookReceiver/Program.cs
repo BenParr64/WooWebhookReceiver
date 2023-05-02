@@ -1,3 +1,5 @@
+using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Configuration;
 using PdfOrders.Repositories;
 using Reports.Repositories;
 using Services;
@@ -25,8 +27,10 @@ const string configurationSettings = "ConfigurationSettings";
 builder.Services.Configure<ConfigurationSettings>(configuration.GetSection(configurationSettings));
 
 builder.Services.AddSignalR();
+builder.Services.AddSingleton(x => new ServiceBusClient(configuration.GetSection(configurationSettings).GetSection("ServiceBusSenderConnectionString").Value));
+builder.Services.AddSingleton<IPdfGeneratorService, PdfGeneratorService>();
 builder.Services.AddHttpClient<IWoocommerceClient, WoocommerceClient>();
-builder.Services.AddScoped<IPdfDocumentGenerator, PdfDocumentGenerator>();
+builder.Services.AddScoped<ITemplateGeneratorService, TemplateGeneratorServiceService>();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddScoped<ViewRenderer>();
 

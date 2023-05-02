@@ -1,9 +1,12 @@
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PdfOrders.Repositories;
 using Services;
 using Services.Enums;
 using Services.Interfaces;
+using System.Text;
+using Services.Helpers;
 
 namespace WoocommerceWebhookReceiver.Controllers
 {
@@ -14,24 +17,40 @@ namespace WoocommerceWebhookReceiver.Controllers
 
         private readonly IHubContext<OrderHub> _hub;
         private readonly IWoocommerceClient _woocommerceClient;
-        private readonly IPdfDocumentGenerator _pdfDocumentGenerator;
-        public OrdersController(IHubContext<OrderHub> hub, IWoocommerceClient woocommerceClient, IPdfDocumentGenerator pdfDocumentGenerator)
+        private readonly ITemplateGeneratorService _templateGeneratorService;
+        private readonly ServiceBusClient _serviceBusClient;
+        private readonly IPdfGeneratorService _pdfGeneratorService;
+
+        public OrdersController(IHubContext<OrderHub> hub, IWoocommerceClient woocommerceClient, ITemplateGeneratorService templateGeneratorService, ServiceBusClient serviceBusClient, IPdfGeneratorService pdfGeneratorService)
         {
             _hub = hub;
             _woocommerceClient = woocommerceClient;
-            _pdfDocumentGenerator = pdfDocumentGenerator;
+            _templateGeneratorService = templateGeneratorService;
+            _serviceBusClient = serviceBusClient;
+            _pdfGeneratorService = pdfGeneratorService;
         }
 
         [HttpPost]
         public async Task<IActionResult> HandleWebhook()
         {
             var order = await _woocommerceClient.GetOrder();
+            var sender = _serviceBusClient.CreateSender("pdfqueue");
 
             foreach (TemplatesEnum template in Enum.GetValues(typeof(TemplatesEnum)))
             {
-                var html = await _pdfDocumentGenerator.GenerateTemplate(template, order);
-                await _hub.Clients.All.SendAsync("ReceiveMessage", html);
+                var pageSize = PageSizeHelper.GetPageSizeFromTemplate(template);
+                var html = await _templateGeneratorService.GenerateTemplateHtml(template, order);
+                var pdf = _pdfGeneratorService.GeneratePdfFromHtml(html, pageSize);
 
+                var message = new ServiceBusMessage(pdf)
+                {
+                    ApplicationProperties =
+                    {
+                        ["pageSize"] = pageSize.ToString(),
+                    }
+                };
+
+                await sender.SendMessageAsync(message);
             }
 
             return Ok();
@@ -42,7 +61,7 @@ namespace WoocommerceWebhookReceiver.Controllers
         {
             var order = await _woocommerceClient.GetOrder();
 
-            var html = await _pdfDocumentGenerator.GenerateTemplate(TemplatesEnum.Invoice, order);
+            var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Invoice, order);
 
             return Ok(html);
         }
@@ -52,7 +71,7 @@ namespace WoocommerceWebhookReceiver.Controllers
         {
             var order = await _woocommerceClient.GetOrder();
 
-            var html = await _pdfDocumentGenerator.GenerateTemplate(TemplatesEnum.Malt, order);
+            var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Malt, order);
 
             return Ok(html);
         }

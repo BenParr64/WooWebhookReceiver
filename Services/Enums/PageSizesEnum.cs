@@ -3,5 +3,5 @@
 public enum PageSizesEnum
 {
     A4,
-    Thermal
+    SixByFour,
 }

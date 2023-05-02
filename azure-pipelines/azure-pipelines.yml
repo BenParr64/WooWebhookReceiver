@@ -26,7 +26,7 @@ stages:
 
   - stage: Deploy
     displayName: Deploy
-    dependsOn: Build
+    dependsOn: [Build, CreateServiceBus]   
     condition: succeeded()
     variables:
       - group: WooWebhookReceiver-Common

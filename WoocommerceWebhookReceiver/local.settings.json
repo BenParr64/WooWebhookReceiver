@@ -9,7 +9,8 @@
   "ConfigurationSettings": {
     "ConsumerKey": "ck_c3a22043f5ce93cf343c35fbf750be4d6697e8f1",
     "ConsumerSecret": "cs_a1f7d36d1795bb921445132bd4387862ebae43ae",
-    "BaseUrl": "https://kegthat.com/"
+    "BaseUrl": "https://kegthat.com/",
+    "ServiceBusSenderConnectionString": "Endpoint=sb://pdfservicebus.servicebus.windows.net/;SharedAccessKeyName=webhook-receiver;SharedAccessKey=ZzwMmpnbyvQWDx/HuhXypF6yt9LuoK0U4+ASbJ4G7mI=;EntityPath=pdfqueue"
 
   }
 }
