@@ -21,6 +21,8 @@ stages:
            azureSubscription: ${{variables.azureSubscription}}
            resourceGroupName: "${{variables.resourceGroupName}}"
            serviceBusName: "${{variables.serviceBusName}}"
+           queueName: "${{variables.queueName}}"
+
 
   - stage: Deploy
     displayName: Deploy
