@@ -8,13 +8,13 @@ jobs:
       - task: AzureCLI@2
         displayName: 'Create Service Bus Namespace'
         inputs:
-          azureSubscription: ${{parameters.azureSubscription}}
+          azureSubscription: ${{ parameters.azureSubscription }}
           scriptType: bash
           scriptLocation: inlineScript
           inlineScript: |
             az servicebus namespace create \
-            --name ${parameters.serviceBusName} \
-            --resource-group ${parameters.resourceGroupName} \
+            --name ${{ parameters.serviceBusName }} \
+            --resource-group ${{ parameters.resourceGroupName }} \
             --sku Standard
 
       - task: AzureCLI@2
@@ -25,7 +25,7 @@ jobs:
           scriptLocation: inlineScript
           inlineScript: |
             az servicebus queue create \
-            --name ${parameters.queueName} \
-            --namespace-name ${parameters.serviceBusName} \
-            --resource-group ${parameters.resourceGroupName}
+            --name ${{ parameters.queueName }} \
+            --namespace-name ${{ parameters.serviceBusName }} \
+            --resource-group ${{ parameters.resourceGroupName }}
   
