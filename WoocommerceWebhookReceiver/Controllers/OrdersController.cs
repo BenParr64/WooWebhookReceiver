@@ -4,76 +4,76 @@ using Microsoft.AspNetCore.SignalR;
 using PdfOrders.Repositories;
 using Services;
 using Services.Enums;
-using Services.Interfaces;
-using System.Text;
 using Services.Helpers;
+using Services.Interfaces;
 
-namespace WoocommerceWebhookReceiver.Controllers
+namespace WoocommerceWebhookReceiver.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class OrdersController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class OrdersController : ControllerBase
+    private readonly IHubContext<OrderHub> _hub;
+    private readonly IPdfGeneratorService _pdfGeneratorService;
+    private readonly ServiceBusClient _serviceBusClient;
+    private readonly ITemplateGeneratorService _templateGeneratorService;
+    private readonly IWoocommerceClient _woocommerceClient;
+
+    public OrdersController(IHubContext<OrderHub> hub, IWoocommerceClient woocommerceClient,
+        ITemplateGeneratorService templateGeneratorService, ServiceBusClient serviceBusClient,
+        IPdfGeneratorService pdfGeneratorService)
     {
+        _hub = hub;
+        _woocommerceClient = woocommerceClient;
+        _templateGeneratorService = templateGeneratorService;
+        _serviceBusClient = serviceBusClient;
+        _pdfGeneratorService = pdfGeneratorService;
+    }
 
-        private readonly IHubContext<OrderHub> _hub;
-        private readonly IWoocommerceClient _woocommerceClient;
-        private readonly ITemplateGeneratorService _templateGeneratorService;
-        private readonly ServiceBusClient _serviceBusClient;
-        private readonly IPdfGeneratorService _pdfGeneratorService;
+    [HttpPost]
+    public async Task<IActionResult> HandleWebhook()
+    {
+        var order = await _woocommerceClient.GetOrder();
+        var sender = _serviceBusClient.CreateSender("pdfqueue");
 
-        public OrdersController(IHubContext<OrderHub> hub, IWoocommerceClient woocommerceClient, ITemplateGeneratorService templateGeneratorService, ServiceBusClient serviceBusClient, IPdfGeneratorService pdfGeneratorService)
+        foreach (TemplatesEnum template in Enum.GetValues(typeof(TemplatesEnum)))
         {
-            _hub = hub;
-            _woocommerceClient = woocommerceClient;
-            _templateGeneratorService = templateGeneratorService;
-            _serviceBusClient = serviceBusClient;
-            _pdfGeneratorService = pdfGeneratorService;
-        }
+            var pageSize = PageSizeHelper.GetPageSizeFromTemplate(template);
+            var html = await _templateGeneratorService.GenerateTemplateHtml(template, order);
+            //var pdf = _pdfGeneratorService.GeneratePdfFromHtml(html, pageSize);
 
-        [HttpPost]
-        public async Task<IActionResult> HandleWebhook()
-        {
-            var order = await _woocommerceClient.GetOrder();
-            var sender = _serviceBusClient.CreateSender("pdfqueue");
-
-            foreach (TemplatesEnum template in Enum.GetValues(typeof(TemplatesEnum)))
+            var message = new ServiceBusMessage(html)
             {
-                var pageSize = PageSizeHelper.GetPageSizeFromTemplate(template);
-                var html = await _templateGeneratorService.GenerateTemplateHtml(template, order);
-                var pdf = _pdfGeneratorService.GeneratePdfFromHtml(html, pageSize);
-
-                var message = new ServiceBusMessage(pdf)
+                ApplicationProperties =
                 {
-                    ApplicationProperties =
-                    {
-                        ["pageSize"] = pageSize.ToString(),
-                    }
-                };
+                    ["pageSize"] = pageSize.ToString()
+                }
+            };
 
-                await sender.SendMessageAsync(message);
-            }
-
-            return Ok();
+            await sender.SendMessageAsync(message);
+            break;
         }
 
-        [HttpGet("Invoice")]
-        public async Task<IActionResult> PreviewInvoiceTemplate()
-        {
-            var order = await _woocommerceClient.GetOrder();
+        return Ok();
+    }
 
-            var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Invoice, order);
+    [HttpGet("Invoice")]
+    public async Task<IActionResult> PreviewInvoiceTemplate()
+    {
+        var order = await _woocommerceClient.GetOrder();
 
-            return Ok(html);
-        }
+        var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Invoice, order);
 
-        [HttpGet("Malt")]
-        public async Task<IActionResult> PreviewMaltTemplate()
-        {
-            var order = await _woocommerceClient.GetOrder();
+        return Ok(html);
+    }
 
-            var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Malt, order);
+    [HttpGet("Malt")]
+    public async Task<IActionResult> PreviewMaltTemplate()
+    {
+        var order = await _woocommerceClient.GetOrder();
 
-            return Ok(html);
-        }
+        var html = await _templateGeneratorService.GenerateTemplateHtml(TemplatesEnum.Malt, order);
+
+        return Ok(html);
     }
 }
